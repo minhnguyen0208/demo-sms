@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Page Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+</head>
+<style>
+    .formfield * {
+        vertical-align: middle;
+    }
+
+    h1 {
+        text-align: center
+    }
+</style>
+
+<body>
+
+    <h1>DEMO API SMS</h1>
+    <form id="form">
+        <div>
+            <label>Token:</label>
+            <input name="token" id="token" value="" type="text" >
+        </div>
+        <div>
+            <input name="clinetId" id="clinetId" value="1144" type="text" hidden>
+            <input name="smsCode" id="smsCode" value="82989" type="text" hidden>
+        </div>
+        <div>
+            <label>Phone Number:</label>
+            <input id="phoneNumber" name="phoneNumber" type="number" required>
+        </div>
+        <p class="formfield">
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="4" cols="50" required></textarea>
+        </p>
+
+        <button id="send" type="submit">Send SMS</button>
+        <button id="status">Check Status</button>
+    </form>
+    <div id="content">
+
+    </div>
+
+</body>
+<script>
+    $('#send').click(function (event) {
+        event.preventDefault();
+        let datas = {};
+        $.each($('#form').serializeArray(), function (i, field) {
+            datas[field.name] = field.value;
+        });
+        if (datas['phoneNumber'] && datas['message']) {
+            $.ajax({
+                url: "https://qpd-api.aossms.com/p11/api/mt.json",
+                method: "post",
+                data: datas,
+                success: function (result) {
+                    $("#content").html(result);
+                }
+            });
+        } else {
+            alert('Please fill phone and message input')
+        }
+    });
+
+    $('#status').click(function (event) {
+        event.preventDefault();
+        let token = $('#token').val();
+        let clinetId = $('#clinetId').val();
+        if (token && clinetId) {
+            $.ajax({
+                url: `https://qpd-api.aossms.com/p11/api/status.json?clientId=${clinetId}&token=${token}&clientTag=Test`,
+                method: "get",
+                success: function (result) {
+                    $("#content").html(result);
+                }
+            });
+        } else {
+            //alert('Please fill phone and message input')
+        }
+    });
+</script>
+
+</html>
